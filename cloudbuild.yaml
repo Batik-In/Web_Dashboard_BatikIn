@@ -1,0 +1,33 @@
+steps:
+  # Build docker images
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'asia-southeast2-docker.pkg.dev/batikin-388401/batikin-registry/dashboard:$SHORT_SHA'
+      - '.'
+  #push docker to artifact registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'asia-southeast2-docker.pkg.dev/batikin-388401/batikin-registry/dashboard:$SHORT_SHA'
+  # Deploy Container Image to Compute Engine
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'compute'
+      - 'ssh'
+      - 'batikin-instance'
+      - '--zone=asia-southeast2-a'
+      - '--project=batikin-388401'
+      - '--command'
+      - |
+        set -e
+        docker pull asia-southeast2-docker.pkg.dev/batikin-388401/batikin-registry/dashboard:$SHORT_SHA
+        # Stop the existing process using the port
+        sudo fuser -k 5000/tcp
+        # Run the Docker container
+        docker run --env-file ./docker.env -d -p 5000:5000 asia-southeast2-docker.pkg.dev/batikin-388401/batikin-registry/backend:$SHORT_SHA
+options:
+  substitution_option: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY
+timeout: 10m
