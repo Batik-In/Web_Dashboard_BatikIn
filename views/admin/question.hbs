@@ -1,15 +1,15 @@
 <div class="container-xxl flex-grow-1 container-p-y">
-   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Admin /</span> Batik Dataset</h4>
+   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Admin /</span> Question</h4>
    <!-- Hoverable Table rows -->
+   <button class="btn rounded-pill btn-success mb-3" style="background-color: #185C64; border: none;" onclick="showModal('create', 0, 'new')">Buat Pertanyaan baru</button>
    <div class="card">
-      <h5 class="card-header">Batik Dataset</h5>
+      <h5 class="card-header">Question List for Quiz</h5>
       <div class="table-responsive text-nowrap">
          <table class="table table-hover">
             <thead>
                <tr>
-                  <th>Nama Batik</th>
-                  <th>Asal</th>
-                  <th>Deskripsi</th>
+                  <th>Question</th>
+                  <th>Status</th>
                   <th>Actions</th>
                </tr>
             </thead>
@@ -30,7 +30,7 @@
          <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                <div class="modal-header">
-                  <h5 class="modal-title" id="modalUpdateTitle">Update batik xxx</h5>
+                  <h5 class="modal-title" id="modalUpdateTitle">Update status question</h5>
                   <button
                      type="button"
                      class="btn-close"
@@ -41,32 +41,11 @@
                <div class="modal-body">
                   <div class="row">
                      <div class="col mb-3">
-                        <label for="nameInput" class="form-label">Name</label>
-                        <input
-                          name="name"
-                           type="text"
-                           id="nameInput"
-                           class="form-control"
-                           placeholder="Masukkan nama batik"
-                           />
-                     </div>
-                  </div>
-                  <div class="row">
-                     <div class="col mb-3">
-                        <label for="cityInput" class="form-label">City</label>
-                        <input
-                          name="city"
-                           type="text"
-                           id="cityInput"
-                           class="form-control"
-                           placeholder="Masukkan asal daerah pembuat batik"
-                           />
-                     </div>
-                  </div>
-                  <div class="row">
-                     <div class="col mb-3">
-                        <label for="descriptionInput" class="form-label">Description</label>
-                        <textarea name="description" id="descriptionInput" class="form-control" cols="30" rows="10" placeholder="Masukkan makna atau filosofi batik"></textarea>
+                        <label for="nameInput" class="form-label">Status</label>
+                        <select name="statusInput" id="statusInput" class="form-control">
+                            <option value="ACTIVE" id="activeOption">active</option>
+                            <option value="INACTIVE" id="inactiveOption">inactive</option>
+                        </select>
                      </div>
                   </div>
                </div>
@@ -74,7 +53,7 @@
                   <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                   Batal
                   </button>
-                  <button type="button" class="btn btn-primary" onclick="updateBatik();">Simpan</button>
+                  <button type="button" class="btn btn-primary" onclick="updateQuestionStatus();">Simpan</button>
                </div>
             </div>
          </div>
@@ -175,17 +154,18 @@
     }
     const showAllBatik = (data, index) => {
       const container =  $('#table-content');
-      const row = `<tr>                               
-                    <td>${data.name}</td>
-                    <td>${data.city}</td>
+      const row = `<tr>                  
                     <td>${data.description.substring(0, 15)}...more</td>
                     <td>
-                        <button
-                              type="button"
-                              class="btn btn-sm btn-primary"
-                               onclick="showModal('update', ${data.id}, '${data.name}')">
+                        <span class="badge rounded-pill bg-label-success" onclick="showModal('update', ${data.id}, '${data.name}')">Active</span>
+                        <span class="badge rounded-pill bg-label-danger" onclick="showModal('update', ${data.id}, '${data.name}')">Inactive</span>
+                    </td>
+                    <td>
+                        <a
+                              href="../admin/question_edit?id=${data.id}"
+                              class="btn btn-sm btn-primary">
                                 Edit
-                            </button>
+                            </a>
                             <button
                               type="button"
                               class="btn btn-sm btn-danger"
@@ -217,9 +197,6 @@
           success: (response) => {
             console.log('Response ', response);
             const batik = response.data;
-            $('#nameInput').val(batik.name);
-            $('#cityInput').val(batik.city);
-            $('#descriptionInput').val(batik.description);
             modal.modal('show');
           },
           error: (err) => {
@@ -228,7 +205,7 @@
         });
       }
     }
-    const updateBatik = () => {
+    const updateQuestionStatus = () => {
       const name = $('#nameInput').val();
       const city = $('#cityInput').val();
       const description = $('#descriptionInput').val();

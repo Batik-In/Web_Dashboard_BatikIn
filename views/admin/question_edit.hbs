@@ -1,0 +1,114 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Admin /</span> Edit Question</h4>
+   <!-- Horizontal -->
+              <!--/ Horizontal -->
+                <div class="col-md-6 col-lg-12 mb-3">
+                    <a href="../admin/question" class="btn btn-outline-primary">Back to Question</a>
+                    <br>
+                    <div class="card h-100 mt-3">
+                        <div class="card-body">
+                            <div class="form-group m-3">
+                                <label for="">Pertanyaan</label>
+                                <input type="text" name="question" id="questionInput" class="form-control" placeholder="Masukkan pertanyaan">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Gambar (opsional)</label>
+                                <input type="file" name="questionImage" id="questionImageInput" class="form-control">
+                            </div>
+                            <br>
+                            <h5 class="m-3">Answer : </h5>
+                            <div class="form-group m-3">
+                                <label for="">Opsi 1</label>
+                                <input type="text" name="option1" id="optionInput1" class="form-control" placeholder="Masukkan opsi jawaban">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Gambar (opsional)</label>
+                                <input type="file" name="answerImage1" id="answerImageInput1" class="form-control">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Penjelasan</label>
+                                <input type="text" name="explanation1" id="explanation1" class="form-control" placeholder="Masukkan penjelasan jawaban">
+                            </div>
+                            <br> <hr>
+                            <div class="form-group m-3">
+                                <label for="">Opsi 2</label>
+                                <input type="text" name="option2" id="optionInput2" class="form-control" placeholder="Masukkan opsi jawaban">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Gambar (opsional)</label>
+                                <input type="file" name="answerImage2" id="answerImageInput2" class="form-control">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Penjelasan</label>
+                                <input type="text" name="explanation2" id="explanation2" class="form-control" placeholder="Masukkan penjelasan jawaban">
+                            </div>
+                            <br> <hr>
+                            <div class="form-group m-3">
+                                <label for="">Opsi 3</label>
+                                <input type="text" name="option3" id="optionInput3" class="form-control" placeholder="Masukkan opsi jawaban">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Gambar (opsional)</label>
+                                <input type="file" name="answerImage3" id="answerImageInput3" class="form-control">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Penjelasan</label>
+                                <input type="text" name="explanation3" id="explanation3" class="form-control" placeholder="Masukkan penjelasan jawaban">
+                            </div>
+                            <br> 
+                            <div class="form-group m-3">
+                                <label for="">Pilih opsi jawaban yang benar</label>
+                                <select name="correctAnswer" id="correctAnswer", class="form-control">
+                                    <option value="1" selected>Opsi 1</option>
+                                    <option value="2">Opsi 2</option>
+                                    <option value="3">Opsi 3</option>
+                                </select>
+                            </div>
+                            <button class="m-3 btn btn-primary" style="background-color: #185C64; border: none;">Simpan Pertanyaan</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(() => {
+      cekAuth()
+        $('#logoutBtn').click(() => {
+            localStorage.clear()
+            window.location = '/logout'
+        })
+    });
+    const accessToken = localStorage.getItem('accessToken');
+    const cekAuth = () => {
+      $.ajax({
+        url: '/verify',
+        method: 'POST',
+        data: {
+          accessToken
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(!response.data.isVerified) {
+              localStorage.clear()
+              window.location = '/logout'
+          } else {
+              const userdata = response.data.data;
+              if(userdata.role !== 'ADMIN') {
+                // redirect to forbidden page
+              }
+              console.log('userdata : ', userdata);
+              $('#nameLabel').html(userdata.name)
+          }
+        },
+        error: (err) => {
+          console.log(err)
+          localStorage.clear()
+          window.location = '/logout'
+        }
+      })
+    }
+</script>
+
+            

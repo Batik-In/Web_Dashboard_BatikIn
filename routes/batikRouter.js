@@ -13,6 +13,20 @@ router.get('/admin/batik', async (req, res) => {
 router.get('/admin/question', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "admin/question"});
 });
+router.get('/admin/question_edit', async (req, res) => {
+    const { id } = req.query;
+    let quizData = undefined;
+    try {
+        const request = await axios({
+            method: 'GET',
+            url: `${BACKEND_URL}/api/articles/${id}`
+        });
+        quizData = request.data;
+    } catch(e) {
+        console.log('ERROR on question by id : ', e);
+    }
+    return res.render('template/sidebar', {data: quizData, content: "admin/question_edit" });
+});
 router.get('/admin/answer', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "admin/answer"});
 });
