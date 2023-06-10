@@ -6,7 +6,7 @@ const cors = require('cors')
 var hbs = require('hbs');
 var exphbs = require('express-handlebars');
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 5000
 const app = express()
 
 //app.set('views', path.join(__dirname, 'views'))
