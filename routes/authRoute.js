@@ -7,6 +7,11 @@ const router = express.Router()
 
 const BACKEND_URL = 'http://34.101.249.38:3000';
 
+router.get('', async (req, res) => {
+    return res.redirect('/login');
+})
+
+
 router.get('/login', async (req, res) => {
     return res.render('auth/login', {data: "it's ok"})
 })
