@@ -1,0 +1,65 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Admin /</span> Detail Articles {{ data.data.title }}</h4>
+   <!-- Horizontal -->
+              <!--/ Horizontal -->
+                <div class="col-md-6 col-lg-12 mb-3">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h2 class="card-title">{{ data.data.title }}</h2>
+                      <p class="card-text">{{ data.data.subtitle }}</p>
+                      <div class="col-md-4">
+                        <img class="card-img card-img-left" src="{{ data.data.image }}" alt="Card image" />
+                      </div>
+                      <br>
+                      <p class="card-text">
+                         {{ data.data.content }}
+                      </p>
+                      <p class="card-text"><small class="text-muted">Last updated at {{ data.data.updatedAt }}</small></p>
+                      <a href="../admin/article" class="btn btn-outline-primary">Back to Articles</a>
+                    </div>
+                  </div>
+                </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(() => {
+      cekAuth()
+        $('#logoutBtn').click(() => {
+            localStorage.clear()
+            window.location = '/logout'
+        })
+    });
+    const accessToken = localStorage.getItem('accessToken');
+    const cekAuth = () => {
+      $.ajax({
+        url: '/verify',
+        method: 'POST',
+        data: {
+          accessToken
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(!response.data.isVerified) {
+              localStorage.clear()
+              window.location = '/logout'
+          } else {
+              const userdata = response.data.data;
+              if(userdata.role !== 'ADMIN') {
+                // redirect to forbidden page
+              }
+              console.log('userdata : ', userdata);
+              $('#nameLabel').html(userdata.name)
+          }
+        },
+        error: (err) => {
+          console.log(err)
+          localStorage.clear()
+          window.location = '/logout'
+        }
+      })
+    }
+</script>
+
+            
