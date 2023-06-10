@@ -33,14 +33,11 @@ app.use(cookieParser())
 
 
 app.use(express.static(path.join(__dirname, 'public')))
-
-const dashboardRoute = require('./routes/dashboardRoute.js')
 const authRoute = require('./routes/authRoute.js')
 const batikRouter = require('./routes/batikRouter.js');
 
 app.use(cors())
 
-app.use(dashboardRoute)
 app.use(authRoute)
 app.use(batikRouter)
 
