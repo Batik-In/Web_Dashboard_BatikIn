@@ -1,17 +1,18 @@
 <div class="container-xxl flex-grow-1 container-p-y">
-   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Admin /</span> Question</h4>
+   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Admin /</span> Data Users</h4>
    <!-- Hoverable Table rows -->
-   <a href="../admin/question_detail" class="btn rounded-pill btn-success mb-3" style="background-color: #185C64; border: none;">Buat Pertanyaan baru</a>
    <div class="card">
-      <h5 class="card-header">Question List for Quiz</h5>
+      <h5 class="card-header">Data users aplikasi BatikIn</h5>
       <div class="table-responsive text-nowrap">
          <table class="table table-hover">
             <thead>
                <tr>
-                  <th>Question</th>
-                  <th>Last updated at</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th>User_id</th>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>CreatedAt</th>
+                  <th>UpdatedAt</th>
                </tr>
             </thead>
             <tbody class="table-border-bottom-0" id="table-content">
@@ -31,7 +32,7 @@
          <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                <div class="modal-header">
-                  <h5 class="modal-title" id="modalUpdateTitle">Update status question</h5>
+                  <h5 class="modal-title" id="modalUpdateTitle">Update batik xxx</h5>
                   <button
                      type="button"
                      class="btn-close"
@@ -42,11 +43,32 @@
                <div class="modal-body">
                   <div class="row">
                      <div class="col mb-3">
-                        <label for="nameInput" class="form-label">Status</label>
-                        <select name="statusInput" id="statusInput" class="form-control">
-                            <option value="ACTIVE" id="activeOption">active</option>
-                            <option value="INACTIVE" id="inactiveOption">inactive</option>
-                        </select>
+                        <label for="nameInput" class="form-label">Name</label>
+                        <input
+                          name="name"
+                           type="text"
+                           id="nameInput"
+                           class="form-control"
+                           placeholder="Masukkan nama batik"
+                           />
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col mb-3">
+                        <label for="cityInput" class="form-label">City</label>
+                        <input
+                          name="city"
+                           type="text"
+                           id="cityInput"
+                           class="form-control"
+                           placeholder="Masukkan asal daerah pembuat batik"
+                           />
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col mb-3">
+                        <label for="descriptionInput" class="form-label">Description</label>
+                        <textarea name="description" id="descriptionInput" class="form-control" cols="30" rows="10" placeholder="Masukkan makna atau filosofi batik"></textarea>
                      </div>
                   </div>
                </div>
@@ -54,7 +76,7 @@
                   <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                   Batal
                   </button>
-                  <button type="button" class="btn btn-primary" onclick="updateQuestionStatus();">Simpan</button>
+                  <button type="button" class="btn btn-primary" onclick="updateBatik();">Simpan</button>
                </div>
             </div>
          </div>
@@ -85,7 +107,7 @@
                   <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                   Batal
                   </button>
-                  <button type="button" class="btn btn-danger" onclick="deleteQuestion();">Ya, hapus data batik ini</button>
+                  <button type="button" class="btn btn-danger" onclick="deleteBatik();">Ya, hapus data batik ini</button>
                </div>
             </div>
          </div>
@@ -97,7 +119,7 @@
 <script>
     $(document).ready(() => {
       cekAuth()
-      fetchQuestion()
+      fetchUsers()
         $('#logoutBtn').click(() => {
             localStorage.clear()
             window.location = '/logout'
@@ -134,52 +156,40 @@
     }
     const BACKEND_URL = 'http://34.101.249.38:3000';
     let activeBatikId = 0;
-    const fetchQuestion = () => {
+    const fetchUsers = () => {
         $.ajax({
-          url: `${BACKEND_URL}/api/question`,
-          method: 'GET',
-          dataType: 'JSON',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          },
-          success: (response) => {
-            console.log('Response ', response);
-            for(let i = 0; i < response.data.length; i++) {
-              showAll(response.data[i], i);
-            }
-          },
-          error: (err) => {
-            console.log(err)
+        url: `${BACKEND_URL}/api/user`,
+        method: 'GET',
+        dataType: 'JSON',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        },
+        success: (response) => {
+          console.log('Response ', response);
+          for(let i = 0; i < response.data.length; i++) {
+            showAll(response.data[i], i);
           }
-        });
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      })
     }
     const showAll = (data, index) => {
-      const container =  $('#table-content');
-      let badgeClass = 'success';
-      let badgeValue = 'Active';
-      if(!data.isActive) {
-        badgeClass = 'danger';
-        badgeValue = 'Inactive';
+      let badgeClass = 'warning';
+      if(data.role === 'USER') {
+        badgeClass = 'info';
       }
-      const row = `<tr>                  
-                    <td>${data.content}</td>
+      const container =  $('#table-content');
+      const row = `<tr>                               
+                    <td>${data.id}</td>
+                    <td>${data.name}</td>
+                    <td>${data.email}</td>
+                    <td>
+                        <span class="badge rounded-pill bg-label-${badgeClass}">${data.role}</span>
+                    </td>
+                    <td>${data.createdAt}</td>
                     <td>${data.updatedAt}</td>
-                    <td>
-                        <span class="badge rounded-pill bg-label-${badgeClass}" onclick="showModal('update', ${data.id}, '${data.content}')">${badgeValue}</span>
-                    </td>
-                    <td>
-                        <a
-                              href="../admin/question_detail?id=${data.id}"
-                              class="btn btn-sm btn-primary">
-                                Edit
-                            </a>
-                            <button
-                              type="button"
-                              class="btn btn-sm btn-danger"
-                              onclick="showModal('delete', ${data.id}, '${data.content}')">
-                                Delete
-                            </button>
-                    </td>
                   </tr>`
       container.append(row)
     }
@@ -190,25 +200,45 @@
       if(action === 'delete') {
         modal = $('#modalDelete');
         title = $('#modalDeleteTitle');
-        title.text(`Hapus data question ?`);
+        title.text(`Hapus data Batik ${name} ?`);
         modal.modal('show');
       } else if(action === 'update') {
-        title.text(`Update question status`);
-        modal.modal('show');
+        title.text(`Update data Batik ${name} ?`);
+        $.ajax({
+          url: `${BACKEND_URL}/api/batik/${id}`,
+          method: 'GET',
+          dataType: 'JSON',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
+          success: (response) => {
+            console.log('Response ', response);
+            const batik = response.data;
+            $('#nameInput').val(batik.name);
+            $('#cityInput').val(batik.city);
+            $('#descriptionInput').val(batik.description);
+            modal.modal('show');
+          },
+          error: (err) => {
+            console.log(err)
+          }
+        });
       }
     }
-    const updateQuestionStatus = () => {
-      const newStatus = $('#statusInput').val();
-      const isActive = newStatus === "ACTIVE";
+    const updateBatik = () => {
+      const name = $('#nameInput').val();
+      const city = $('#cityInput').val();
+      const description = $('#descriptionInput').val();
       $.ajax({
-          url: `${BACKEND_URL}/api/question/status`,
-          method: 'PUT',
+          url: `${BACKEND_URL}/api/batik`,
+          method: 'POST',
           dataType: 'JSON',
-          contentType: 'application/json',
-          data: JSON.stringify({
-            isActive, 
-            questionId: Number(activeBatikId)
-          }),
+          data: {
+             id: activeBatikId,
+             name,
+             city,
+             description
+          },
           headers: {
             'Authorization': `Bearer ${accessToken}`
           },
@@ -220,9 +250,9 @@
           }
         });
     }
-    const deleteQuestion = () => {
+    const deleteBatik = () => {
       $.ajax({
-          url: `${BACKEND_URL}/api/question/${activeBatikId}`,
+          url: `${BACKEND_URL}/api/batik/${activeBatikId}`,
           method: 'DELETE',
           dataType: 'JSON',
           headers: {

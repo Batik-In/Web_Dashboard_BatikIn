@@ -13,19 +13,13 @@ router.get('/admin/batik', async (req, res) => {
 router.get('/admin/question', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "admin/question"});
 });
-router.get('/admin/question_edit', async (req, res) => {
+router.get('/admin/question_detail', async (req, res) => {
     const { id } = req.query;
-    let quizData = undefined;
-    try {
-        const request = await axios({
-            method: 'GET',
-            url: `${BACKEND_URL}/api/articles/${id}`
-        });
-        quizData = request.data;
-    } catch(e) {
-        console.log('ERROR on question by id : ', e);
+    let title = 'Buat pertanyaan baru';
+    if(id) {
+        title = 'Ubah pertanyaan';
     }
-    return res.render('template/sidebar', {data: quizData, content: "admin/question_edit" });
+    return res.render('template/sidebar', {data: { id, title }, content: "admin/question_detail" });
 });
 router.get('/admin/answer', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "admin/answer"});
@@ -60,6 +54,9 @@ router.get('/admin/article_detail', async (req, res) => {
 router.get('/admin/profile', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "admin/batik"});
 });
+router.get('/admin/users', async (req, res) => {
+    return res.render('template/sidebar', {data: "it's ok", content: "admin/users"});
+});
 
 
 /* TODO (FE - user) */
@@ -87,8 +84,13 @@ router.get('/user/quiz/finish', async (req, res) => {
 router.get('/user/quiz/history', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok"})
 });
+
+
+router.get('/profile', async (req, res) => {
+    return res.render('template/sidebar', {data: "it's ok", content: "admin/question"});
+});
 router.get('/user/profile', async (req, res) => {
-    return res.render('template/sidebar', {data: "it's ok"})
+    return res.render('template/sidebar', {data: "it's ok", content: "admin/batik"});
 });
 
 module.exports = router

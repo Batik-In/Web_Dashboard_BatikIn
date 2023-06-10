@@ -179,7 +179,7 @@
                         success: (data => {
                             if(data.status){
                                 localStorage.setItem('accessToken', data.token)
-                                window.location = '/home'
+                                window.location = '/admin/batik'
                             } else {
                                 alertContainer.attr('hidden', false)
                                 alertMessage.html(data.message)
@@ -219,7 +219,7 @@
                     dataType: 'JSON',
                     success: (response) => {
                         if(response.data.isVerified) {
-                            window.location = '/home'
+                            window.location = '/admin/batik'
                         } 
                     },
                     error: (err) => {

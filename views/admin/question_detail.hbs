@@ -1,0 +1,205 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Admin /</span> {{data.title}}</h4>
+   <!-- Horizontal -->
+              <!--/ Horizontal -->
+                <div class="col-md-6 col-lg-12 mb-3">
+                    <a href="../admin/question" class="btn btn-outline-primary">Back to Question</a>
+                    <br>
+                    <div class="card h-100 mt-3">
+                        <input type="hidden" name="id" id="questionId" value="{{data.id}}">
+                        <div class="card-body">
+                            <div class="form-group m-3">
+                                <label for="">Pertanyaan</label>
+                                <input type="text" name="question" id="questionInput" class="form-control" placeholder="Masukkan pertanyaan">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Gambar (opsional)</label>
+                                <input type="file" name="questionImage" id="questionImageInput" class="form-control">
+                            </div>
+                            <br>
+                            <h5 class="m-3">Answer : </h5>
+                            <input type="hidden" name="answerId0" id="answerId0" class="form-control" placeholder="Masukkan opsi jawaban">
+                            <input type="hidden" name="answerId1" id="answerId1" class="form-control" placeholder="Masukkan opsi jawaban">
+                            <input type="hidden" name="answerId2" id="answerId2" class="form-control" placeholder="Masukkan opsi jawaban">
+                            <div class="form-group m-3">
+                                <label for="">Opsi 1</label>
+                                <input type="text" name="option1" id="optionInput0" class="form-control" placeholder="Masukkan opsi jawaban">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Penjelasan</label>
+                                <input type="text" name="explanation1" id="explanation0" class="form-control" placeholder="Masukkan penjelasan jawaban">
+                            </div>
+                            <br> <hr>
+                            <div class="form-group m-3">
+                                <label for="">Opsi 2</label>
+                                <input type="text" name="option2" id="optionInput1" class="form-control" placeholder="Masukkan opsi jawaban">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Penjelasan</label>
+                                <input type="text" name="explanation2" id="explanation1" class="form-control" placeholder="Masukkan penjelasan jawaban">
+                            </div>
+                            <br> <hr>
+                            <div class="form-group m-3">
+                                <label for="">Opsi 3</label>
+                                <input type="text" name="option3" id="optionInput2" class="form-control" placeholder="Masukkan opsi jawaban">
+                            </div>
+                            <div class="form-group m-3">
+                                <label for="">Penjelasan</label>
+                                <input type="text" name="explanation3" id="explanation2" class="form-control" placeholder="Masukkan penjelasan jawaban">
+                            </div>
+                            <br> 
+                            <div class="form-group m-3">
+                                <label for="">Pilih opsi jawaban yang benar</label>
+                                <select name="correctAnswer" id="correctAnswer", class="form-control">
+                                    <option value="0" id="correct0" selected>Opsi 1</option>
+                                    <option value="1" id="correct1">Opsi 2</option>
+                                    <option value="2" id="correct2">Opsi 3</option>
+                                </select>
+                            </div>
+                            <button class="m-3 btn btn-primary" style="background-color: #185C64; border: none;" onclick="upsertQuestion();">Simpan Pertanyaan</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(() => {
+      cekAuth()
+      loadQuestion()
+        $('#logoutBtn').click(() => {
+            localStorage.clear()
+            window.location = '/logout'
+        })
+    });
+    const BACKEND_URL = 'http://34.101.249.38:3000';
+    const accessToken = localStorage.getItem('accessToken');
+    const questionId = $('#questionId').val();
+    let answerValue = 0;
+    let questionActive = false;
+    const cekAuth = () => {
+      $.ajax({
+        url: '/verify',
+        method: 'POST',
+        data: {
+          accessToken
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(!response.data.isVerified) {
+              localStorage.clear()
+              window.location = '/logout'
+          } else {
+              const userdata = response.data.data;
+              if(userdata.role !== 'ADMIN') {
+                // redirect to forbidden page
+              }
+              console.log('userdata : ', userdata);
+              $('#nameLabel').html(userdata.name)
+          }
+        },
+        error: (err) => {
+          console.log(err)
+          localStorage.clear()
+          window.location = '/logout'
+        }
+      })
+    }
+
+    const loadQuestion = () => {
+        if(questionId && questionId != '0') {
+            /* Fetch by id*/
+            $.ajax({
+                url: `${BACKEND_URL}/api/question/${questionId}`,
+                method: 'GET',
+                dataType: 'JSON',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                success: (response) => {
+                    const questionData = response.data;
+                    $('#questionInput').val(questionData.content);
+
+                    for(let i = 0; i < questionData.options.length; i++) {
+                        $(`#answerId${i}`).val(questionData.options[i].id);
+                        $(`#optionInput${i}`).val(questionData.options[i].content);
+                        $(`#explanation${i}`).val(questionData.options[i].explanation);
+                        $(`#correct${i}`).val(questionData.options[i].id);
+                        
+                        if(questionData.options[i].isCorrect) {
+                            answerValue = questionData.options[i].id;
+                        }
+                        questionActive = questionData.isActive;
+                    }
+                    $('#correctAnswer').val(answerValue);
+
+                },
+                error: (err) => {
+                    console.log(err);
+                }
+            });
+        }
+    }
+
+    const upsertQuestion = () => {
+        const options = [];
+        const question = $('#questionInput').val();
+        const selectedValue = $('#correctAnswer').val();
+        console.log(selectedValue);
+        for(let i = 0; i < 3; i++) {
+            let answerId = $(`#answerId${i}`).val();
+            const answer = $(`#optionInput${i}`).val();
+            const explanation = $(`#explanation${i}`).val();
+            console.log('a', answerId)
+            let isCorrect = Number(selectedValue) == Number(answerId);
+
+            if(!answerId || answerId == '') {
+                /* Create */
+                isCorrect = i == Number(selectedValue);
+                options.push({
+                    content: answer,
+                    explanation,
+                    isCorrect
+                });
+            } else {
+                /* Update */
+                options.push({
+                    id: Number(answerId),
+                    questionId: Number(questionId),
+                    content: answer,
+                    explanation,
+                    isCorrect
+                });
+            }
+        }
+        const body = {
+            question,
+            options,
+            isActive: questionActive
+        }
+        if(questionId && questionId != '0') {
+            /* Update */
+            body.id = Number(questionId);
+        } 
+        console.log('Body : ', body);
+        $.ajax({
+          url: `${BACKEND_URL}/api/question`,
+          method: 'POST',
+          dataType: 'JSON',
+          contentType: 'application/json',
+          data: JSON.stringify(body), 
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
+          success: (response) => {
+            window.location = '../admin/question';
+          },
+          error: (err) => {
+            console.log(err)
+          }
+        });
+    }
+</script>
+
+            
