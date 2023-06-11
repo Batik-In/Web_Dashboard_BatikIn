@@ -11,22 +11,18 @@ steps:
     args:
       - 'push'
       - 'asia-southeast2-docker.pkg.dev/batikin-388401/batikin-registry/dashboard:$SHORT_SHA'
-  # Deploy Container Image to Compute Engine
-  - name: 'gcr.io/cloud-builders/gcloud'
+  # Step 3: Deploy the container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
     args:
-      - 'compute'
-      - 'ssh'
-      - 'batikin-instance'
-      - '--zone=asia-southeast2-a'
-      - '--project=batikin-388401'
-      - '--command'
-      - |
-        set -e
-        docker pull asia-southeast2-docker.pkg.dev/batikin-388401/batikin-registry/dashboard:$SHORT_SHA
-        # Stop the existing process using the port
-        sudo fuser -k 5000/tcp
-        # Run the Docker container
-        docker run --env-file ./docker.env -d -p 5000:5000 asia-southeast2-docker.pkg.dev/batikin-388401/batikin-registry/backend:$SHORT_SHA
+      - 'run'
+      - 'deploy'
+      - 'batikin-dashboard'
+      - '--image'
+      - 'asia-southeast2-docker.pkg.dev/batikin-388401/batikin-registry/dashboard:$SHORT_SHA'
+      - '--region'
+      - 'asia-southeast2'
+      # Add additional flags as needed, such as --platform, --memory, etc.
 options:
   substitution_option: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
