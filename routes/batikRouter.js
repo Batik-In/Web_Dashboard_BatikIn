@@ -51,9 +51,7 @@ router.get('/admin/article_detail', async (req, res) => {
     }
     return res.render('template/sidebar', {data: articleData, content: "admin/article_detail" });
 });
-router.get('/admin/profile', async (req, res) => {
-    return res.render('template/sidebar', {data: "it's ok", content: "admin/batik"});
-});
+
 router.get('/admin/users', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "admin/users"});
 });

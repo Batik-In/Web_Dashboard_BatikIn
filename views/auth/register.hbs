@@ -27,7 +27,7 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>BatikIn - Login</title>
+    <title>BatikIn - Register</title>
 
     <meta name="description" content="" />
 
@@ -83,17 +83,17 @@
               <hr>
 
               <form id="" class="mb-3" action="index.html" method="POST">
-                {{!-- <div class="mb-3">
+                <div class="mb-3">
                   <label for="username" class="form-label">Your name</label>
                   <input
                     type="text"
                     class="form-control"
-                    id="username"
-                    name="username"
+                    id="nameValue"
+                    name="nameValue"
                     placeholder="Enter your fullname"
                     autofocus
                   />
-                </div> --}}
+                </div>
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
                   <input type="text" class="form-control" id="emailValue" name="email" placeholder="Enter your email" />
@@ -115,13 +115,13 @@
 
                 <button type="button" id="submitBtn" class="btn btn-primary d-grid w-100" 
                 style="background-image: linear-gradient(to right, #3B8056 , #58BA7E); border: none;"
-                >Sign In</button>
+                >Sign Up</button>
               </form>
 
               <p class="text-center">
-                <span>Belum mempunyai akun ?</span>
-                <a href="../register">
-                  <span style="color: #3B8056;"><u>Register disini</u></span>
+                <span>Sudah mempunyai akun ?</span>
+                <a href="../login">
+                  <span style="color: #3B8056;"><u>Login disini</u></span>
                 </a>
               </p>
             </div>
@@ -165,35 +165,42 @@
                     alertContainer.attr('hidden', true)
                     const email = $('#emailValue').val()
                     const password = $('#passwordValue').val()
-                    if(email == '' || password == ''){
+                    const name = $('#nameValue').val();
+                    if(email == '' || password == '' || name == ''){
                         alertContainer.attr('hidden', false)
-                        alertMessage.html('Email and Password must be filled !')
+                        alertMessage.html('All fields must be filled !')
                         submitBtn.attr('disabled', false)
-                        submitBtn.html('Sign In')
+                        submitBtn.html('Sign Up')
                         return
                     }
-                    const data = {email, password}
+                    const data = {email, password, name}
                     $.ajax({
-                        url: '/login',
+                        url: '/register',
                         method: 'POST',
                         data,
                         dataType: 'JSON',
                         success: (data => {
                             if(data.status){
-                                localStorage.setItem('accessToken', data.token)
-                                window.location = '/admin/batik'
+                                localStorage.setItem('accessToken', data.token);
+                                 $('#emailValue').val('');
+                                 $('#passwordValue').val('');
+                                 $('#nameValue').val('');
+                                 submitBtn.attr('disabled', false)
+                                submitBtn.html('Sign Up')
+                                 alertContainer.attr('hidden', false)
+                                 alertMessage.html('Your account successfully registered! please login');
                             } else {
                                 alertContainer.attr('hidden', false)
                                 alertMessage.html(data.message)
                                 submitBtn.attr('disabled', false)
-                                submitBtn.html('Sign In')
+                                submitBtn.html('Sign Up')
                             }
                         }),
                         error: (err => {
                             alertContainer.attr('hidden', false)
                             alertMessage.html(err?.responseJSON?.message || 'unknown error');
                             submitBtn.attr('disabled', false)
-                            submitBtn.html('Sign In')
+                            submitBtn.html('Sign Up')
                         })
                     })
                 })
