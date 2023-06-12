@@ -5,7 +5,7 @@ const axios = require('axios')
 
 const router = express.Router()
 
-const BACKEND_URL = 'http://34.101.249.38:3000';
+const BACKEND_URL = 'https://backend.batikin.site';
 
 router.get('', async (req, res) => {
     return res.redirect('/login');

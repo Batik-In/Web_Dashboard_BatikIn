@@ -3,7 +3,7 @@ const express =  require('express')
 
 const router = express.Router()
 
-const BACKEND_URL = 'https://api.batikin.site';
+const BACKEND_URL = 'https://backend.batikin.site';
 
 /* TODO (FE - admin) */
 // DONE
