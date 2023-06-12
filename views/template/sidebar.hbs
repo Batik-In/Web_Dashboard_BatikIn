@@ -227,7 +227,7 @@
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                   <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                      <img src="../new_assets/img/avatars/default.png" alt class="w-px-40 h-auto rounded-circle" />
+                      <img src="../new_assets/img/avatars/default.png" id="sidebarProfile2" alt class="w-px-40 h-auto rounded-circle" />
                     </div>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
@@ -236,12 +236,12 @@
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
-                              <img src="../new_assets/img/avatars/default.png" alt class="w-px-40 h-auto rounded-circle" />
+                              <img src="../new_assets/img/avatars/default.png" id="sidebarProfile" alt class="w-px-40 h-auto rounded-circle" />
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-semibold d-block">Admin BatikIn</span>
-                            <small class="text-muted">Admin</small>
+                            <span class="fw-semibold d-block" id="sidebarName">User BatikIn</span>
+                            <small class="text-muted" id="sidebarRole">USER</small>
                           </div>
                         </div>
                       </a>
@@ -336,7 +336,30 @@
             localStorage.clear()
             window.location = '/login'
         });
+        fetchUserDetail2();
     });
+    const fetchUserDetail2 = () => {
+       $.ajax({
+        url: `${BACKEND_URL}/api/user/detail`,
+        method: 'GET',
+        dataType: 'JSON',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        },
+        success: (response) => {
+          const {name, role} = response.data;
+          $('#sidebarName').val(name);
+          $('#sidebarRole').val(role);
+          let profile = response.data?.profilePicture || DEFAULT_PROFILE;
+          profile = profile === '' ? DEFAULT_PROFILE : profile;
+          $('#sidebarProfile').attr('src', profile);
+          $('#sidebarProfile2').attr('src', profile);
+        },
+        error: (err) => {
+          console.log(err)
+        }
+       });
+    }
     </script>
   </body>
 </html>
