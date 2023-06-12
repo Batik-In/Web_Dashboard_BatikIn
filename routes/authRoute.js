@@ -14,7 +14,12 @@ router.get('', async (req, res) => {
 
 router.get('/login', async (req, res) => {
     return res.render('auth/login', {data: "it's ok"})
-})
+});
+
+router.get('/register', async (req, res) => {
+    return res.render('auth/register', {data: "it's ok"})
+});
+
 
 router.post('/verify', async (req, res) => {
     res.json({
@@ -45,6 +50,36 @@ router.post('/login', async (req, res) => {
             status: true,
             message: 'success',
             token: request.data.data.accessToken
+        });
+    } catch(e) {
+        let message = 'unknown error';
+        let status = 500;
+        if (axios.isAxiosError(e)) {
+            status = e.response?.status || 500;
+            message = e.response?.data?.message || 'unknown error';
+        }
+        return res.status(status).json({
+            status: false,
+            message
+        });
+    }    
+});
+
+router.post('/register', async (req, res) => {
+    const { email, password, name } = req.body;
+    try {
+        const request = await axios({
+            method: 'POST',
+            url: `${BACKEND_URL}/api/auth/register`,
+            data: {
+                email,
+                password,
+                name
+            }
+        });
+        return res.status(200).json({
+            status: true,
+            message: 'success'
         });
     } catch(e) {
         let message = 'unknown error';

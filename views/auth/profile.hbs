@@ -18,12 +18,12 @@
             <div class="card-body">
                <div class="d-flex align-items-start align-items-sm-center gap-4">
                   <img
-                     src="../new_assets/img/avatars/1.png"
+                     src=""
                      alt="user-avatar"
                      class="d-block rounded"
                      height="100"
                      width="100"
-                     id="uploadedAvatar"
+                     id="profilePictureUploaded"
                      />
                   <div class="button-wrapper">
                      <label for="upload" class="btn btn-primary batikin-gradient me-2 mb-4" tabindex="0">
@@ -66,8 +66,8 @@
                         <input
                            type="text"
                            class="form-control"
-                           id="organization"
-                           name="organization"
+                           id="role"
+                           name="role"
                            value="ThemeSelection"
                            disabled="true"
                            />
@@ -77,8 +77,8 @@
                         <input
                            class="form-control"
                            type="text"
-                           id="firstName"
-                           name="firstName"
+                           id="name"
+                           name="name"
                            value="John"
                            autofocus
                            />
@@ -100,8 +100,11 @@
 <script>
     $(document).ready(() => {
       cekAuth();
+      fetchUserDetail();
     });
     const accessToken = localStorage.getItem('accessToken');
+    const BACKEND_URL = 'https://backend.batikin.site';
+    const DEFAULT_PROFILE = '../new_assets/img/avatars/default.png';
     const cekAuth = () => {
       $.ajax({
         url: '/verify',
@@ -126,6 +129,31 @@
           window.location = '/logout'
         }
       })
+    }
+    const fetchUserDetail = () => {
+       $.ajax({
+        url: `${BACKEND_URL}/api/user/detail`,
+        method: 'GET',
+        dataType: 'JSON',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        },
+        success: (response) => {
+          console.log('Response ', response.data);
+          const {email, name, role} = response.data;
+          $('#name').val(name);
+          $('#email').val(email);
+          $('#role').val(role);
+
+          let profile = response.data?.profile || DEFAULT_PROFILE;
+          profile = profile === '' ? DEFAULT_PROFILE : profile;
+          $('#profilePictureUploaded').attr('src', profile);
+
+        },
+        error: (err) => {
+          console.log(err)
+        }
+       });
     }
 </script>
 
