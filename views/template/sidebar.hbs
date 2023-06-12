@@ -49,6 +49,21 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="../new_assets/js/config.js"></script>
+    <style>
+      .batikin-primary {
+        background-color: #185C64 !important; 
+        border: none !important;
+      }
+      .batikin-secondary {
+        background-color: #489465 !important;
+        border: none !important;
+      }
+      .batikin-gradient {
+        background-image: linear-gradient(to right, #3B8056 , #58BA7E) !important; 
+        border: none !important;
+        color: white;
+      }
+    </style>
   </head>
 
   <body>
@@ -162,6 +177,12 @@
               <a href="../admin/users" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
                 <div data-i18n="Tables">Users Data</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="../profile" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cog"></i>
+                <div data-i18n="Tables">Account Settings</div>
               </a>
             </li>
           </ul>

@@ -22,6 +22,14 @@ router.post('/verify', async (req, res) => {
     })
 })
 
+router.get('/profile', async(req, res) => {
+    return res.render('template/sidebar', {data: "it's ok", content: "auth/profile"});
+})
+
+router.get('/change_password', async(req, res) => {
+    return res.render('template/sidebar', {data: "it's ok", content: "auth/change_password"});
+});
+
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
