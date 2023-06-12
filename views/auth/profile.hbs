@@ -16,6 +16,10 @@
             <h5 class="card-header">Profile Details</h5>
             <!-- Account -->
             <div class="card-body">
+               <div class="alert alert-warning">
+                  <i class="bx bx-error-alt bx-sm align-middle"></i> &nbsp
+                  Your profile is not complete, you can complete data for profile on this page
+               </div>
                <div class="d-flex align-items-start align-items-sm-center gap-4">
                   <img
                      src=""
@@ -39,7 +43,7 @@
                      </label>
                      <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
                      <i class="bx bx-reset d-block d-sm-none"></i>
-                     <span class="d-none d-sm-block">Reset</span>
+                     <span class="d-none d-sm-block" id="reset">Reset</span>
                      </button>
                      <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
                   </div>
@@ -68,7 +72,6 @@
                            class="form-control"
                            id="role"
                            name="role"
-                           value="ThemeSelection"
                            disabled="true"
                            />
                      </div>
@@ -79,14 +82,36 @@
                            type="text"
                            id="name"
                            name="name"
-                           value="John"
                            autofocus
                            />
                      </div>
+                     <div class="mb-3 col-md-6">
+                        <label for="firstName" class="form-label">Phone</label>
+                        <input
+                           class="form-control"
+                           type="text"
+                           id="phone"
+                           name="phone"
+                           autofocus
+                           />
+                     </div>
+                      <div class="mb-3 col-md-6">
+                        <label for="firstName" class="form-label">City</label>
+                        <input
+                           class="form-control"
+                           type="text"
+                           id="city"
+                           name="city"
+                           autofocus
+                           />
+                     </div>
+                     <div class="mb-3 col-md-12">
+                        <label for="firstName" class="form-label">Address</label>
+                        <textarea name="address" id="address" class="form-control" cols="30" rows="10"></textarea>
+                     </div>
                   </div>
                   <div class="mt-2">
-                     <button type="submit" class="btn btn-primary batikin-primary me-2">Save changes</button>
-                     <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                     <button type="button" class="btn btn-primary batikin-primary me-2" onclick="updateUserdata();">Save changes</button>
                   </div>
                </form>
             </div>
@@ -96,15 +121,79 @@
    </div>
 </div>
 
+{{!-- Modal Response Api --}}
+<div class="col-lg-4 col-md-6">
+   <div class="mt-3">
+      <!-- Modal -->
+      <div class="modal fade" id="modalResponse" tabindex="-1" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <button
+                     type="button"
+                     class="btn-close"
+                     data-bs-dismiss="modal"
+                     aria-label="Close"
+                     ></button>
+               </div>
+               <div class="modal-body">
+                  <h4 class="text-center" id="title">operation success</h4>
+                  <br>
+                  <h3 class="text-center">
+                     <img id="resImage" src="../new_assets/img/vector/500.svg" height="200" alt="">
+                  </h3>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary batikin-gradientx" data-bs-dismiss="modal">
+                  OK
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+
+   const accessToken = localStorage.getItem('accessToken');
+   const BACKEND_URL = 'https://backend.batikin.site';
+   const DEFAULT_PROFILE = '../new_assets/img/avatars/default.png';
+   let NEW_PROFILE = DEFAULT_PROFILE;
+
     $(document).ready(() => {
       cekAuth();
       fetchUserDetail();
+      $("#upload").change(function(){
+         const formData = new FormData();
+         const fileInput = $('#upload')[0];
+         formData.append('file', fileInput.files[0]);
+         $.ajax({
+            url: `${BACKEND_URL}/api/media/0`,
+            method: 'POST',
+            data: formData,
+            dataType: 'JSON',
+            processData: false,
+            contentType: false,
+            headers: {
+               'Authorization': `Bearer ${accessToken}`
+            },
+            success: (response) => {
+               let newMedia = response.data.url || DEFAULT_PROFILE;
+               NEW_PROFILE = newMedia !== '' ? newMedia : '';
+               $('#profilePictureUploaded').attr('src', NEW_PROFILE);
+            },
+            error: (err) => {
+               console.log(err)
+            }
+         });
+      });
+      $("#reset").click(function() {
+          NEW_PROFILE = '';
+          $('#profilePictureUploaded').attr('src', DEFAULT_PROFILE);
+      });
     });
-    const accessToken = localStorage.getItem('accessToken');
-    const BACKEND_URL = 'https://backend.batikin.site';
-    const DEFAULT_PROFILE = '../new_assets/img/avatars/default.png';
     const cekAuth = () => {
       $.ajax({
         url: '/verify',
@@ -128,7 +217,7 @@
           localStorage.clear()
           window.location = '/logout'
         }
-      })
+      });
     }
     const fetchUserDetail = () => {
        $.ajax({
@@ -140,12 +229,15 @@
         },
         success: (response) => {
           console.log('Response ', response.data);
-          const {email, name, role} = response.data;
+          const {email, name, role, city, address, phone} = response.data;
           $('#name').val(name);
           $('#email').val(email);
           $('#role').val(role);
+          $('#city').val(city);
+          $('#address').val(address);
+          $('#phone').val(phone);
 
-          let profile = response.data?.profile || DEFAULT_PROFILE;
+          let profile = response.data?.profilePicture || DEFAULT_PROFILE;
           profile = profile === '' ? DEFAULT_PROFILE : profile;
           $('#profilePictureUploaded').attr('src', profile);
 
@@ -155,6 +247,42 @@
         }
        });
     }
+    const updateUserdata = () => {
+         const data = {
+            name: $('#name').val(),
+            city: $('#city').val(),
+            address: $('#address').val(),
+            phone: $('#phone').val(),
+            profile: NEW_PROFILE
+         }
+         console.log('DATA ', data);
+         $.ajax({
+            url: `${BACKEND_URL}/api/user/data`,
+            method: 'PUT',
+            dataType: 'JSON',
+            data,
+            headers: {
+               'Authorization': `Bearer ${accessToken}`
+            },
+            success: (response) => {
+               showModal('Successfully update your data !', true);
+            },
+            error: (err) => {
+               console.log(err);
+               showModal('Seems error happen here, please retry it', false);
+            }
+         });
+    }
+
+   const showModal = (title, isSuccess) => {
+      let img = '../new_assets/img/vector/success.svg';
+      if(!isSuccess) {
+         img = '../new_assets/img/vector/500.svg'; 
+      }
+      $('#title').text(title);
+      $('#resImage').attr('src', img);
+      $('#modalResponse').modal('show');
+   }
 </script>
 
             
