@@ -1,5 +1,8 @@
 <div class="container-xxl flex-grow-1 container-p-y">
-   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Dashboard /</span> Artikel</h4>
+   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Dashboard /</span> Artikel Bookmarks</h4>
+   <div class="alert alert-info">
+        <i class='bx bx-info-circle' ></i> &nbsp This page only showing your favorite articles, you can remove it by remove bookmark on each detail page of that article
+   </div>
               <div class="row mb-5" id="article-content">
                 {{!-- Content --}}
               </div>
@@ -41,7 +44,7 @@
     let activeBatikId = 0;
     const fetchArticles = () => {
         $.ajax({
-        url: `${BACKEND_URL}/api/articles?categoryId=1`,
+        url: `${BACKEND_URL}/api/articles/bookmark`,
         method: 'GET',
         dataType: 'JSON',
         headers: {

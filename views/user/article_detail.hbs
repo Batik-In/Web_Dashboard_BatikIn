@@ -1,10 +1,11 @@
 <div class="container-xxl flex-grow-1 container-p-y">
-   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Admin /</span> Detail Articles {{ data.data.title }}</h4>
+   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Dashboard /</span> Detail Artikel {{ data.data.title }}</h4>
    <!-- Horizontal -->
               <!--/ Horizontal -->
                 <div class="col-md-6 col-lg-12 mb-3">
                   <div class="card h-100">
                     <div class="card-body">
+                      <input type="hidden" id="articleId" value="{{ data.data.id }}"> 
                       <h2 class="card-title">{{ data.data.title }}</h2>
                       <p class="card-text">{{ data.data.subtitle }}</p>
                       <div class="col-md-4">
@@ -15,7 +16,13 @@
                          {{ data.data.content }}
                       </p>
                       <p class="card-text"><small class="text-muted">Last updated at {{ data.data.updatedAt }}</small></p>
-                      <a href="../admin/article" class="btn btn-outline-primary batikin-gradient">Back to Articles</a>
+                      <button hidden="true" id="bookmark" class="btn btn-outline-success" onclick="bookmarkAction('POST');">
+                        <i class='bx bx-bookmark'></i>
+                      </button>
+                      <button hidden="true" id="unbookmark" class="btn btn-outline-success batikin-primary" onclick="bookmarkAction('DELETE');">
+                        <i class='bx bx-bookmark' style="color: white;"></i>
+                      </button>
+                      <a href="../user/article" class="btn btn-outline-primary batikin-gradient">Back to Articles</a>
                     </div>
                   </div>
                 </div>
@@ -26,11 +33,13 @@
 <script>
     $(document).ready(() => {
       cekAuth()
+      checkBookMark()
         $('#logoutBtn').click(() => {
             localStorage.clear()
             window.location = '/logout'
         })
     });
+    const BACKEND_URL = 'https://backend.batikin.site';
     const accessToken = localStorage.getItem('accessToken');
     const cekAuth = () => {
       $.ajax({
@@ -49,7 +58,6 @@
               if(userdata.role !== 'ADMIN') {
                 // redirect to forbidden page
               }
-              console.log('userdata : ', userdata);
               $('#nameLabel').html(userdata.name)
           }
         },
@@ -59,6 +67,45 @@
           window.location = '/logout'
         }
       })
+    }
+    let isBookmark = false;
+    const id = $('#articleId').val();
+    const checkBookMark = () => {
+      $.ajax({
+        url: `${BACKEND_URL}/api/articles/isBookmark/${id}`,
+        method: 'GET',
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          isBookmark = response?.data?.isBookmark || false;
+          if(isBookmark) {
+            $('#unbookmark').attr('hidden', false);
+          } else {
+            $('#bookmark').attr('hidden', false);
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+    }
+    const bookmarkAction = (method) => {
+       $.ajax({
+          url: `${BACKEND_URL}/api/articles/bookmark/${id}`,
+          method,
+          headers: {
+            "Authorization": `Bearer ${accessToken}`
+          },
+          dataType: 'JSON',
+          success: (response) => {
+            location.reload();
+          },
+          error: (err) => {
+            console.log(err);
+          }
+        })
     }
 </script>
 

@@ -1,0 +1,61 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Dashboard /</span> Quiz Result</h4>
+   <!-- Horizontal -->
+              <!--/ Horizontal -->
+                <div class="col-md-12 col-lg-12 mb-3">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="col-md-12 alert alert-success">
+                        <h3 class="text-center">
+                            <img class="text-center" width="300" src="../new_assets/img/vector/200.svg" alt="Card image" />
+                        </h3>
+                        <p class="card-text text-dark">
+                        Terima kasih telah berpartisipasi dalam Quiz tentang Batik! Kami menghargai dedikasi dan semangat Anda dalam menjawab setiap pertanyaan dengan cermat. Melalui kuis ini, Anda telah membantu meningkatkan pemahaman tentang keindahan dan kekayaan warisan budaya batik.
+                        <br> <br>
+                        Kami berharap pengalaman ini telah memberikan Anda wawasan yang lebih dalam tentang batik dan memperkaya pengetahuan Anda tentang seni tradisional Indonesia. Teruslah menjaga semangat penelusuran dan penghargaan terhadap budaya kita sendiri, serta bagikan pengetahuan Anda kepada orang lain untuk mempromosikan keberlanjutan warisan budaya ini.
+                        </p>
+                      </div>
+                      
+                      <a href="../user/quiz_history" class="btn btn-primary batikin-primary">See History</a>
+                      <a href="../user/quiz_start" class="btn btn-primary batikin-primary">Take One More</a>
+                      <br>
+                    </div>
+                  </div>
+                </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(() => {
+      cekAuth()
+        $('#logoutBtn').click(() => {
+            localStorage.clear()
+            window.location = '/logout'
+        })
+    });
+    const accessToken = localStorage.getItem('accessToken');
+    const cekAuth = () => {
+      $.ajax({
+        url: '/verify',
+        method: 'POST',
+        data: {
+          accessToken
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(!response.data.isVerified) {
+              localStorage.clear()
+              window.location = '/logout'
+          }
+        },
+        error: (err) => {
+          console.log(err)
+          localStorage.clear()
+          window.location = '/logout'
+        }
+      })
+    }
+</script>
+
+            

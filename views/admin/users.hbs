@@ -2,7 +2,7 @@
    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Admin /</span> Data Users</h4>
    <!-- Hoverable Table rows -->
    <div class="card">
-      <h5 class="card-header">Data users aplikasi BatikIn</h5>
+      <h5 class="card-header">Data user aplikasi BatikIn</h5>
       <div class="table-responsive text-nowrap">
          <table class="table table-hover">
             <thead>
@@ -10,6 +10,8 @@
                   <th>User_id</th>
                   <th>Nama</th>
                   <th>Email</th>
+                  <th>Phone</th>
+                  <th>City</th>
                   <th>Role</th>
                   <th>CreatedAt</th>
                   <th>UpdatedAt</th>
@@ -185,6 +187,11 @@
                     <td>${data.id}</td>
                     <td>${data.name}</td>
                     <td>${data.email}</td>
+                    <td>
+                      <i class="menu-icon tf-icons bx bxl-whatsapp"></i>
+                      ${data.phone}
+                    </td>
+                    <td>${data.city}</td>
                     <td>
                         <span class="badge rounded-pill bg-label-${badgeClass}">${data.role}</span>
                     </td>

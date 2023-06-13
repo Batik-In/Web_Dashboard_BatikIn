@@ -1,12 +1,13 @@
 <div class="container-xxl flex-grow-1 container-p-y">
-   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Dashboard /</span> Quiz History</h4>
+   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Admin /</span> Quiz History</h4>
    <!-- Hoverable Table rows -->
    <div class="card">
-      <h5 class="card-header">Your Score History</h5>
+      <h5 class="card-header">User Quiz History</h5>
       <div class="table-responsive text-nowrap">
          <table class="table table-hover">
             <thead>
                <tr>
+                  <th>User ID</th>
                   <th>Score</th>
                   <th>Last Updated</th>
                   <th>Status</th>
@@ -65,7 +66,7 @@
     let activeBatikId = 0;
     const fetchArticles = () => {
         $.ajax({
-        url: `${BACKEND_URL}/api/quiz/history`,
+        url: `${BACKEND_URL}/api/quiz/history/admin`,
         method: 'GET',
         dataType: 'JSON',
         headers: {
@@ -87,6 +88,7 @@
       const score = data.score;
       let badgeClass = score > 80 ? 'success' : score > 70 ? 'warning' : 'danger' ;
       const row = `<tr>                               
+                    <td>${data.userId}</td>
                     <td>
                         <span class="badge rounded-pill bg-label-${badgeClass} text-dark">${score}</span>
                     </td>
@@ -99,88 +101,6 @@
                   </tr>`
       container.append(row)
     }
-    const showModal = (action, id, name) => {
-      let modal = $('#modalUpdate');
-      let title = $('#modalUpdateTitle');
-      activeBatikId = Number(id);
-      if(action === 'delete') {
-        modal = $('#modalDelete');
-        title = $('#modalDeleteTitle');
-        title.text(`Hapus data Batik ${name} ?`);
-        modal.modal('show');
-      } else if(action === 'update') {
-        title.text(`Update data Batik ${name} ?`);
-        $.ajax({
-          url: `${BACKEND_URL}/api/batik/${id}`,
-          method: 'GET',
-          dataType: 'JSON',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          },
-          success: (response) => {
-            console.log('Response ', response);
-            const batik = response.data;
-            $('#nameInput').val(batik.name);
-            $('#cityInput').val(batik.city);
-            $('#descriptionInput').val(batik.description);
-            modal.modal('show');
-          },
-          error: (err) => {
-            console.log(err)
-          }
-        });
-      }
-    }
-    const updateBatik = () => {
-      const name = $('#nameInput').val();
-      const city = $('#cityInput').val();
-      const description = $('#descriptionInput').val();
-      $.ajax({
-          url: `${BACKEND_URL}/api/batik`,
-          method: 'POST',
-          dataType: 'JSON',
-          data: {
-             id: activeBatikId,
-             name,
-             city,
-             description
-          },
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          },
-          success: (response) => {
-            location.reload();
-          },
-          error: (err) => {
-            console.log(err);
-          }
-        });
-    }
-    const deleteBatik = () => {
-      $.ajax({
-          url: `${BACKEND_URL}/api/batik/${activeBatikId}`,
-          method: 'DELETE',
-          dataType: 'JSON',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          },
-          success: (response) => {
-            location.reload();
-          },
-          error: (err) => {
-            console.log(err);
-          }
-        });
-    }
 </script>
-
- {{!-- <td>
-                        <button
-                              type="button"
-                              class="btn btn-sm btn-primary batikin-gradient"
-                               onclick="i('update', id, 'id')">
-                                See Detail
-                            </button>
-                    </td> --}}
 
             

@@ -87,68 +87,9 @@
           
 
           <div class="menu-inner-shadow"></div>
-
           <ul class="menu-inner py-1">
-            {{!-- <li class="menu-header small text-uppercase">
-              <span class="menu-header-text" style="color: #185C64;">Batik Classification</span>
-            </li>
-            <li class="menu-item">
-              <a href="index.html" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                <div data-i18n="Analytics">Scan Batik</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="index.html" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                <div data-i18n="Analytics">Classification History</div>
-              </a>
-            </li>
-            
-                        <!-- Misc -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text" style="color: #185C64;">Other Features</span></li>
-            <li class="menu-item">
-              <a
-                href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
-                target="_blank"
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bx-support"></i>
-                <div data-i18n="Support">Quiz</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a
-                href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
-                target="_blank"
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bx-support"></i>
-                <div data-i18n="Support">Quiz History</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a
-                href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/"
-                target="_blank"
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Documentation">Article</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a
-                href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/documentation/"
-                target="_blank"
-                class="menu-link"
-              >
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Documentation">Bookmarks</div>
-              </a>
-            </li> --}}
-
-            <!-- Forms & Tables -->
+            <div id="sidebar_ADMIN" hidden="true" class="m-2">
+              <!-- Forms & Tables -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text" style="color: #185C64;">Manage Data</span></li>
             <!-- Tables -->
             <li class="menu-item" id="admin/article">
@@ -175,9 +116,21 @@
                 <div data-i18n="Tables">Classification History</div>
               </a>
             </li>
+            <li class="menu-item" id="admin/batik">
+              <a href="../admin/quiz_history" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-history"></i>
+                <div data-i18n="Tables">Quiz History</div>
+              </a>
+            </li>
+            {{!-- <li class="menu-item">
+              <a href="../campaign" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
+                <div data-i18n="Tables">Campaign</div>
+              </a>
+            </li> --}}
             <li class="menu-item">
               <a href="../admin/users" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-user"></i>
+                <i class="menu-icon tf-icons bx bxs-user-account"></i>
                 <div data-i18n="Tables">Users</div>
               </a>
             </li>
@@ -187,6 +140,62 @@
                 <div data-i18n="Tables">Account Settings</div>
               </a>
             </li>
+            </div>
+             <div id="sidebar_USER" hidden="true" class="m-2">
+                <li class="menu-header small text-uppercase">
+                <span class="menu-header-text" style="color: #185C64;">Batik Classification</span>
+              </li>
+              <li class="menu-item">
+                <a href="../user/classification" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-camera"></i>
+                  <div data-i18n="Analytics">Scan Batik</div>
+                </a>
+              </li>
+                          <!-- Misc -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text" style="color: #185C64;">Other Features</span></li>
+            <li class="menu-item">
+              <a
+                href="../user/quiz_start"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons bx bx-notepad"></i>
+                <div data-i18n="Support">Quiz</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="../user/quiz_history"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons bx bx-history"></i>
+                <div data-i18n="Support">Quiz History</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="../user/article"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Documentation">Article</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a
+                href="../user/article_bookmarks"
+                class="menu-link"
+              >
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Documentation">Bookmarks</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="../profile" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cog"></i>
+                <div data-i18n="Tables">Account Settings</div>
+              </a>
+            </li>
+            </div>
           </ul>
         </aside>
         <!-- / Menu -->
@@ -338,9 +347,11 @@
         });
         fetchUserDetail2();
     });
+    const DP = '../new_assets/img/avatars/default.png';
+    const BE = 'https://backend.batikin.site'; 
     const fetchUserDetail2 = () => {
        $.ajax({
-        url: `${BACKEND_URL}/api/user/detail`,
+        url: `${BE}/api/user/detail`,
         method: 'GET',
         dataType: 'JSON',
         headers: {
@@ -348,10 +359,11 @@
         },
         success: (response) => {
           const {name, role} = response.data;
-          $('#sidebarName').val(name);
-          $('#sidebarRole').val(role);
-          let profile = response.data?.profilePicture || DEFAULT_PROFILE;
-          profile = profile === '' ? DEFAULT_PROFILE : profile;
+          $('#sidebarName').text(name);
+          $('#sidebarRole').text(role);
+          $(`#sidebar_${role}`).attr('hidden', false);
+          let profile = response.data?.profilePicture || DP;
+          profile = profile === '' ? DP : profile;
           $('#sidebarProfile').attr('src', profile);
           $('#sidebarProfile2').attr('src', profile);
         },
