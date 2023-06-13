@@ -87,19 +87,71 @@
           
 
           <div class="menu-inner-shadow"></div>
-
           <ul class="menu-inner py-1">
-            <li class="menu-header small text-uppercase">
-              <span class="menu-header-text" style="color: #185C64;">Batik Classification</span>
-            </li>
-            <li class="menu-item">
-              <a href="../user/classification" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-camera"></i>
-                <div data-i18n="Analytics">Scan Batik</div>
+            <div id="sidebar_ADMIN" hidden="true" class="m-2">
+              <!-- Forms & Tables -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text" style="color: #185C64;">Manage Data</span></li>
+            <!-- Tables -->
+            <li class="menu-item" id="admin/article">
+              <a href="../admin/article" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Tables">Articles</div>
               </a>
             </li>
-            
-            <!-- Misc -->
+            <li class="menu-item">
+              <a href="../admin/question" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-question-mark"></i>
+                <div data-i18n="Tables">Question</div>
+              </a>
+            </li>
+             <li class="menu-item" id="admin/batik">
+              <a href="../admin/batik" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-data"></i>
+                <div data-i18n="Tables">Batik Dataset</div>
+              </a>
+            </li>
+            <li class="menu-item" id="admin/batik">
+              <a href="../admin/classification" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-history"></i>
+                <div data-i18n="Tables">Classification History</div>
+              </a>
+            </li>
+            <li class="menu-item" id="admin/batik">
+              <a href="../admin/quiz_history" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-history"></i>
+                <div data-i18n="Tables">Quiz History</div>
+              </a>
+            </li>
+            {{!-- <li class="menu-item">
+              <a href="../campaign" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
+                <div data-i18n="Tables">Campaign</div>
+              </a>
+            </li> --}}
+            <li class="menu-item">
+              <a href="../admin/users" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-user-account"></i>
+                <div data-i18n="Tables">Users</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="../profile" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cog"></i>
+                <div data-i18n="Tables">Account Settings</div>
+              </a>
+            </li>
+            </div>
+             <div id="sidebar_USER" hidden="true" class="m-2">
+                <li class="menu-header small text-uppercase">
+                <span class="menu-header-text" style="color: #185C64;">Batik Classification</span>
+              </li>
+              <li class="menu-item">
+                <a href="../user/classification" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-camera"></i>
+                  <div data-i18n="Analytics">Scan Batik</div>
+                </a>
+              </li>
+                          <!-- Misc -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text" style="color: #185C64;">Other Features</span></li>
             <li class="menu-item">
               <a
@@ -143,52 +195,7 @@
                 <div data-i18n="Tables">Account Settings</div>
               </a>
             </li>
-
-            <!-- Forms & Tables -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text" style="color: #185C64;">Manage Data</span></li>
-            <!-- Tables -->
-            <li class="menu-item" id="admin/article">
-              <a href="../admin/article" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Tables">Articles</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="../admin/question" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-question-mark"></i>
-                <div data-i18n="Tables">Question</div>
-              </a>
-            </li>
-             <li class="menu-item" id="admin/batik">
-              <a href="../admin/batik" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-data"></i>
-                <div data-i18n="Tables">Batik Dataset</div>
-              </a>
-            </li>
-            <li class="menu-item" id="admin/batik">
-              <a href="../admin/classification" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-history"></i>
-                <div data-i18n="Tables">Classification History</div>
-              </a>
-            </li>
-            {{!-- <li class="menu-item">
-              <a href="../campaign" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
-                <div data-i18n="Tables">Campaign</div>
-              </a>
-            </li> --}}
-            <li class="menu-item">
-              <a href="../admin/users" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-user-account"></i>
-                <div data-i18n="Tables">Users</div>
-              </a>
-            </li>
-            <li class="menu-item">
-              <a href="../profile" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-cog"></i>
-                <div data-i18n="Tables">Account Settings</div>
-              </a>
-            </li>
+            </div>
           </ul>
         </aside>
         <!-- / Menu -->
@@ -354,6 +361,7 @@
           const {name, role} = response.data;
           $('#sidebarName').text(name);
           $('#sidebarRole').text(role);
+          $(`#sidebar_${role}`).attr('hidden', false);
           let profile = response.data?.profilePicture || DP;
           profile = profile === '' ? DP : profile;
           $('#sidebarProfile').attr('src', profile);

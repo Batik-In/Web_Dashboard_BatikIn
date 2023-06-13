@@ -1,0 +1,106 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Admin /</span> Quiz History</h4>
+   <!-- Hoverable Table rows -->
+   <div class="card">
+      <h5 class="card-header">User Quiz History</h5>
+      <div class="table-responsive text-nowrap">
+         <table class="table table-hover">
+            <thead>
+               <tr>
+                  <th>User ID</th>
+                  <th>Score</th>
+                  <th>Last Updated</th>
+                  <th>Status</th>
+                  {{!-- <th>Actions</th> --}}
+               </tr>
+            </thead>
+            <tbody class="table-border-bottom-0" id="table-content">
+              {{!-- Dynamic Content --}}
+            </tbody>
+         </table>
+      </div>
+   </div>
+   <!--/ Hoverable Table rows -->
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(() => {
+      cekAuth()
+      fetchArticles()
+        $('#logoutBtn').click(() => {
+            localStorage.clear()
+            window.location = '/logout'
+        })
+    });
+    const accessToken = localStorage.getItem('accessToken');
+    const cekAuth = () => {
+      $.ajax({
+        url: '/verify',
+        method: 'POST',
+        data: {
+          accessToken
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(!response.data.isVerified) {
+              localStorage.clear()
+              window.location = '/logout'
+          } else {
+              const userdata = response.data.data;
+              if(userdata.role !== 'ADMIN') {
+                // redirect to forbidden page
+              }
+              console.log('userdata : ', userdata);
+              $('#nameLabel').html(userdata.name)
+          }
+        },
+        error: (err) => {
+          console.log(err)
+          localStorage.clear()
+          window.location = '/logout'
+        }
+      })
+    }
+    const BACKEND_URL = 'https://backend.batikin.site';
+    let activeBatikId = 0;
+    const fetchArticles = () => {
+        $.ajax({
+        url: `${BACKEND_URL}/api/quiz/history/admin`,
+        method: 'GET',
+        dataType: 'JSON',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        },
+        success: (response) => {
+          console.log('Response ', response);
+          for(let i = 0; i < response.data.length; i++) {
+            showAllBatik(response.data[i], i);
+          }
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      })
+    }
+    const showAllBatik = (data, index) => {
+      const container =  $('#table-content');
+      const score = data.score;
+      let badgeClass = score > 80 ? 'success' : score > 70 ? 'warning' : 'danger' ;
+      const row = `<tr>                               
+                    <td>${data.userId}</td>
+                    <td>
+                        <span class="badge rounded-pill bg-label-${badgeClass} text-dark">${score}</span>
+                    </td>
+                    <td>${data.updatedAt}</td>
+                    <td>
+                      <span onclick="location.href='../user/quiz_start';" class="btn btn-sm ${data.status === 'DONE' ? 'btn-success batikin-gradient' : 'btn-warning'}">
+                        ${data.status === 'DONE' ? 'Finished' : `On Progress (${data.state}/10)`}
+                      </span>
+                    </td>
+                  </tr>`
+      container.append(row)
+    }
+</script>
+
+            

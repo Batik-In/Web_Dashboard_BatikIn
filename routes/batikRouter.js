@@ -22,6 +22,9 @@ router.get('/admin/question_detail', async (req, res) => {
 router.get('/admin/quiz', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "admin/quiz"});
 });
+router.get('/admin/quiz_history', async (req, res) => {
+    return res.render('template/sidebar', {content: "admin/quiz_history" })
+});
 router.get('/admin/classification', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "admin/classification_history"});
 });
@@ -48,7 +51,6 @@ router.get('/admin/users', async (req, res) => {
 });
 
 
-/* TODO (FE - user) */
 router.get('/user/classification', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "user/classification"});
 });
@@ -59,7 +61,6 @@ router.get('/user/article', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "user/article"});
 });
 
-// TODO : Bookmarks
 router.get('/user/article_detail', async (req, res) => {
     const { id } = req.query;
     let articleData = undefined;
@@ -75,7 +76,6 @@ router.get('/user/article_detail', async (req, res) => {
     return res.render('template/sidebar', {data: articleData, content: "user/article_detail" });
 });
 
-// TODO :
 router.get('/user/article_bookmarks', async (req, res) => {
     return res.render('template/sidebar', {data: "it's ok", content: "user/article_bookmarks"})
 });

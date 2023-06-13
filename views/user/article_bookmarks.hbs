@@ -44,7 +44,7 @@
     let activeBatikId = 0;
     const fetchArticles = () => {
         $.ajax({
-        url: `${BACKEND_URL}/api/articles?categoryId=1&bookmarks=enabled`,
+        url: `${BACKEND_URL}/api/articles/bookmark`,
         method: 'GET',
         dataType: 'JSON',
         headers: {
