@@ -1,5 +1,5 @@
 <div class="container-xxl flex-grow-1 container-p-y">
-   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Admin /</span> Detail Articles {{ data.data.title }}</h4>
+   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Dashboard /</span> Detail Artikel {{ data.data.title }}</h4>
    <!-- Horizontal -->
               <!--/ Horizontal -->
                 <div class="col-md-6 col-lg-12 mb-3">
@@ -15,7 +15,13 @@
                          {{ data.data.content }}
                       </p>
                       <p class="card-text"><small class="text-muted">Last updated at {{ data.data.updatedAt }}</small></p>
-                      <a href="../admin/article" class="btn btn-outline-primary batikin-gradient">Back to Articles</a>
+                      <button id="bookmark" class="btn btn-outline-success">
+                        <i class='bx bx-bookmark'></i>
+                      </button>
+                      <button id="unbookmark" class="btn btn-outline-success batikin-primary">
+                        <i class='bx bx-bookmark' style="color: white;"></i>
+                      </button>
+                      <a href="../user/article" class="btn btn-outline-primary batikin-gradient">Back to Articles</a>
                     </div>
                   </div>
                 </div>

@@ -1,0 +1,213 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Dashboard /</span> Classification History</h4>
+   <div class="row">
+      <div class="col-md-12">
+         <ul class="nav nav-pills flex-column flex-md-row mb-3">
+            <li class="nav-item">
+               <a class="nav-link" href="../user/classification">
+               <i class="bx bx-camera me-1"></i> Scan</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link batikin-gradient" href="../user/classification_history" style="color: white;"
+                  ><i class="bx bx-history me-1"></i> History</a
+                  >
+            </li>
+         </ul>
+         <div class="card mb-4">
+            <h5 class="card-header">Your Classification History</h5>
+            <!-- Account -->
+            <div class="card-body">
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Result</th>
+                            <th>Timestamp</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0" id="table-content">
+                        {{!-- Dynamic Content --}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+{{!-- Modal Response Api --}}
+<div class="col-lg-4 col-md-6">
+   <div class="mt-3">
+      <!-- Modal -->
+      <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="modalDeleteTitle">Classification Detail</h5>
+                  <button
+                     type="button"
+                     class="btn-close"
+                     data-bs-dismiss="modal"
+                     aria-label="Close"
+                     ></button>
+               </div>
+
+               <div class="modal-body">
+                <h4 id="batikName">Batik Name</h4>
+                <h6 id="batikCity">City</h6>
+                <img src="" id="batikImage" height="200" width="200" alt="">
+                <br> <br>
+                <p id="batikDesc">Lorem ipsum</p>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary batikin-gradientx" data-bs-dismiss="modal">
+                  OK
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+{{!-- Modal Response Api --}}
+<div class="col-lg-4 col-md-6">
+   <div class="mt-3">
+      <!-- Modal -->
+      <div class="modal fade" id="modalResponse" tabindex="-1" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <button
+                     type="button"
+                     class="btn-close"
+                     data-bs-dismiss="modal"
+                     aria-label="Close"
+                     ></button>
+               </div>
+               <div class="modal-body">
+                  <h4 class="text-center" id="title">operation success</h4>
+                  <br>
+                  <h3 class="text-center">
+                     <img id="resImage" src="../new_assets/img/vector/500.svg" height="200" alt="">
+                  </h3>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary batikin-gradientx" data-bs-dismiss="modal">
+                  OK
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+   const accessToken = localStorage.getItem('accessToken');
+   const BACKEND_URL = 'https://backend.batikin.site';
+   const DEFAULT_PROFILE = '../new_assets/img/avatars/default.png';
+   let NEW_IMAGE = DEFAULT_PROFILE;
+   const list = [];
+    $(document).ready(() => {
+      cekAuth();
+      fetchHistory();
+    });
+    const cekAuth = () => {
+      $.ajax({
+        url: '/verify',
+        method: 'POST',
+        data: {
+          accessToken
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(!response.data.isVerified) {
+              localStorage.clear()
+              window.location = '/logout'
+          } else {
+              const userdata = response.data.data;
+              console.log('userdata : ', userdata);
+              $('#nameLabel').html(userdata.name)
+          }
+        },
+        error: (err) => {
+          console.log(err)
+          localStorage.clear()
+          window.location = '/logout'
+        }
+      });
+    }
+
+    const showModal = (title, isSuccess) => {
+      let img = '../new_assets/img/vector/success.svg';
+      if(!isSuccess) {
+         img = '../new_assets/img/vector/500.svg'; 
+      }
+      $('#title').text(title);
+      $('#resImage').attr('src', img);
+      $('#modalResponse').modal('show');
+   }
+    const fetchHistory = () => {
+        $.ajax({
+        url: `${BACKEND_URL}/api/classification`,
+        method: 'GET',
+        dataType: 'JSON',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        },
+        success: (response) => {
+          console.log('Response ', response);
+          for(let i = 0; i < response.data.length; i++) {
+            const dt = response.data[i];
+            showAll(dt, i);
+            list.push({
+                id: dt.id,
+                image: dt.image,
+                name: dt.result.data.name,
+                city: dt.result.data.city,
+                description: dt.result.data.description
+            });
+          }
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      })
+    }
+    const showAll = (data, index) => {
+      const container =  $('#table-content');
+      const row = `<tr>                               
+                    <td>
+                         <img src="${data.image}" style="height: 80px" alt="">
+                    </td>
+                    <td>${data.result.data.name}</td>
+                    <td>
+                        ${data.createdAt}
+                    </td>
+                    <td>
+                        <button class="btn btn-success batikin-gradient btn-sm" onclick="showDetail('${data.id}');">See Detail</button>
+                    </td>
+                  </tr>`
+      container.append(row)
+    }
+    const showDetail = (id) => {
+      const i = list.findIndex((l) => l.id == id);
+      if(i !== -1) {
+         const dt = list[i];
+         console.log('D', dt)
+        $('#batikName').text(dt.name);
+        $('#batikCity').text(dt.city);
+        $('#batikDesc').text(dt.description);
+        $('#batikImage').attr('src', dt.image);
+        $('#modalDetail').modal('show');
+      }
+    }
+</script>
+
+            

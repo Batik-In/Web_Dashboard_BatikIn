@@ -1,0 +1,269 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Dashboard /</span> Quiz History</h4>
+   <!-- Hoverable Table rows -->
+   <div class="card">
+      <h5 class="card-header">Your Score History</h5>
+      <div class="table-responsive text-nowrap">
+         <table class="table table-hover">
+            <thead>
+               <tr>
+                  <th>Score</th>
+                  <th>Timestamp</th>
+                  <th>Actions</th>
+               </tr>
+            </thead>
+            <tbody class="table-border-bottom-0" id="table-content">
+              {{!-- Dynamic Content --}}
+            </tbody>
+         </table>
+      </div>
+   </div>
+   <!--/ Hoverable Table rows -->
+</div>
+
+{{!-- Modal Edit --}}
+<div class="col-lg-4 col-md-6">
+   <div class="mt-3">
+      <!-- Modal -->
+      <div class="modal fade" id="modalUpdate" tabindex="-1" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="modalUpdateTitle">Update batik xxx</h5>
+                  <button
+                     type="button"
+                     class="btn-close"
+                     data-bs-dismiss="modal"
+                     aria-label="Close"
+                     ></button>
+               </div>
+               <div class="modal-body">
+                  <div class="row">
+                     <div class="col mb-3">
+                        <label for="nameInput" class="form-label">Name</label>
+                        <input
+                          name="name"
+                           type="text"
+                           id="nameInput"
+                           class="form-control"
+                           placeholder="Masukkan nama batik"
+                           />
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col mb-3">
+                        <label for="cityInput" class="form-label">City</label>
+                        <input
+                          name="city"
+                           type="text"
+                           id="cityInput"
+                           class="form-control"
+                           placeholder="Masukkan asal daerah pembuat batik"
+                           />
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col mb-3">
+                        <label for="descriptionInput" class="form-label">Description</label>
+                        <textarea name="description" id="descriptionInput" class="form-control" cols="30" rows="10" placeholder="Masukkan makna atau filosofi batik"></textarea>
+                     </div>
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                  Batal
+                  </button>
+                  <button type="button" class="btn btn-primary batikin-primary" onclick="updateBatik();">Simpan</button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+{{!-- Modal delete --}}
+<div class="col-lg-4 col-md-6">
+   <div class="mt-3">
+      <!-- Modal -->
+      <div class="modal fade" id="modalDelete" tabindex="-1" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="modalDeleteTitle">Hapus batik xxx</h5>
+                  <button
+                     type="button"
+                     class="btn-close"
+                     data-bs-dismiss="modal"
+                     aria-label="Close"
+                     ></button>
+               </div>
+               <div class="modal-body">
+                 
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                  Batal
+                  </button>
+                  <button type="button" class="btn btn-danger" onclick="deleteBatik();">Ya, hapus data batik ini</button>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(() => {
+      cekAuth()
+      fetchArticles()
+        $('#logoutBtn').click(() => {
+            localStorage.clear()
+            window.location = '/logout'
+        })
+    });
+    const accessToken = localStorage.getItem('accessToken');
+    const cekAuth = () => {
+      $.ajax({
+        url: '/verify',
+        method: 'POST',
+        data: {
+          accessToken
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(!response.data.isVerified) {
+              localStorage.clear()
+              window.location = '/logout'
+          } else {
+              const userdata = response.data.data;
+              if(userdata.role !== 'ADMIN') {
+                // redirect to forbidden page
+              }
+              console.log('userdata : ', userdata);
+              $('#nameLabel').html(userdata.name)
+          }
+        },
+        error: (err) => {
+          console.log(err)
+          localStorage.clear()
+          window.location = '/logout'
+        }
+      })
+    }
+    const BACKEND_URL = 'https://backend.batikin.site';
+    let activeBatikId = 0;
+    const fetchArticles = () => {
+        $.ajax({
+        url: `${BACKEND_URL}/api/batik`,
+        method: 'GET',
+        dataType: 'JSON',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        },
+        success: (response) => {
+          console.log('Response ', response);
+          for(let i = 0; i < response.data.length; i++) {
+            showAllBatik(response.data[i], i);
+          }
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      })
+    }
+    const showAllBatik = (data, index) => {
+      const container =  $('#table-content');
+      let badgeClass = 'success';
+      const row = `<tr>                               
+                    <td>
+                        <span class="badge rounded-pill bg-label-${badgeClass} text-dark">90</span>
+                    </td>
+                    <td>2h ago</td>
+                    <td>
+                        <button
+                              type="button"
+                              class="btn btn-sm btn-primary batikin-gradient"
+                               onclick="showModal('update', ${data.id}, '${data.name}')">
+                                See Detail
+                            </button>
+                    </td>
+                  </tr>`
+      container.append(row)
+    }
+    const showModal = (action, id, name) => {
+      let modal = $('#modalUpdate');
+      let title = $('#modalUpdateTitle');
+      activeBatikId = Number(id);
+      if(action === 'delete') {
+        modal = $('#modalDelete');
+        title = $('#modalDeleteTitle');
+        title.text(`Hapus data Batik ${name} ?`);
+        modal.modal('show');
+      } else if(action === 'update') {
+        title.text(`Update data Batik ${name} ?`);
+        $.ajax({
+          url: `${BACKEND_URL}/api/batik/${id}`,
+          method: 'GET',
+          dataType: 'JSON',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
+          success: (response) => {
+            console.log('Response ', response);
+            const batik = response.data;
+            $('#nameInput').val(batik.name);
+            $('#cityInput').val(batik.city);
+            $('#descriptionInput').val(batik.description);
+            modal.modal('show');
+          },
+          error: (err) => {
+            console.log(err)
+          }
+        });
+      }
+    }
+    const updateBatik = () => {
+      const name = $('#nameInput').val();
+      const city = $('#cityInput').val();
+      const description = $('#descriptionInput').val();
+      $.ajax({
+          url: `${BACKEND_URL}/api/batik`,
+          method: 'POST',
+          dataType: 'JSON',
+          data: {
+             id: activeBatikId,
+             name,
+             city,
+             description
+          },
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
+          success: (response) => {
+            location.reload();
+          },
+          error: (err) => {
+            console.log(err);
+          }
+        });
+    }
+    const deleteBatik = () => {
+      $.ajax({
+          url: `${BACKEND_URL}/api/batik/${activeBatikId}`,
+          method: 'DELETE',
+          dataType: 'JSON',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
+          success: (response) => {
+            location.reload();
+          },
+          error: (err) => {
+            console.log(err);
+          }
+        });
+    }
+</script>
+
+            

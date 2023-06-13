@@ -16,7 +16,7 @@
             <h5 class="card-header">Profile Details</h5>
             <!-- Account -->
             <div class="card-body">
-               <div class="alert alert-warning">
+               <div class="alert alert-warning" id="profileUncompleted" hidden="true">
                   <i class="bx bx-error-alt bx-sm align-middle"></i> &nbsp
                   Your profile is not complete, you can complete data for profile on this page
                </div>
@@ -239,7 +239,12 @@
 
           let profile = response.data?.profilePicture || DEFAULT_PROFILE;
           profile = profile === '' ? DEFAULT_PROFILE : profile;
+          NEW_PROFILE = profile;
           $('#profilePictureUploaded').attr('src', profile);
+          
+          if(name == '' || city == '' || address == '' || phone == '') {
+            $('#profileUncompleted').attr('hidden', false); 
+          }
 
         },
         error: (err) => {

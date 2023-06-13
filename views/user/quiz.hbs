@@ -1,0 +1,217 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+   <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light">Dashboard /</span> Doing Quiz</h4>
+   <!-- Horizontal -->
+              <!--/ Horizontal -->
+                <div class="col-md-12 col-lg-12 mb-3">
+                  <div class="card h-100">
+                    <div class="card-body"> 
+                      <span class="badge bg-label-primary" id="scoreLabel" style="font-size: 16px;">(0/10)</span>
+                      <br> <br>
+                      <p id="question" class="card-text">
+                        Lorem Ipsum
+                      </p>
+                      <div class="answerContent">
+                         <div class="form-check">
+                            <input name="answer" class="form-check-input" type="radio" value="1" id="answer0">
+                            <label class="form-check-label" for="answer0" id="labelAnswer0"> A. Loading.. </label>
+                        </div>
+                        <br>
+                        <div class="form-check">
+                              <input name="answer" class="form-check-input" type="radio" value="2" id="answer1">
+                              <label class="form-check-label" for="answer1" id="labelAnswer1"> B. Loading.. </label>
+                        </div>
+                        <br>
+                        <div class="form-check">
+                              <input name="answer" class="form-check-input" type="radio" value="3" id="answer2">
+                              <label class="form-check-label" for="answer2" id="labelAnswer2"> C. Loading.. </label>
+                        </div>
+                        <br>
+                      </div>
+                      <div id="answerInfo"></div>
+                      <button type="button" id="btnAction" class="btn btn-primary batikin-gradient" onclick="checkAnswer();">Check Answer</button>
+                    </div>
+                  </div>
+                </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(() => {
+      cekAuth()
+      fetchState()
+        $('#logoutBtn').click(() => {
+            localStorage.clear()
+            window.location = '/logout'
+        })
+    });
+    let number = 1;
+    const accessToken = localStorage.getItem('accessToken');
+    const BACKEND_URL = 'https://backend.batikin.site'; 
+    const container =  $('#answerContent');
+    let questionId = 0;
+    let quizHistoryId = "";
+    let isCorrect = false;
+    let explanation1 = "";
+    let explanation2 = "";
+    let questionContent = "";
+    const cekAuth = () => {
+      $.ajax({
+        url: '/verify',
+        method: 'POST',
+        data: {
+          accessToken
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(!response.data.isVerified) {
+              localStorage.clear()
+              window.location = '/logout'
+          }
+        },
+        error: (err) => {
+          console.log(err)
+          localStorage.clear()
+          window.location = '/logout'
+        }
+      })
+    }
+    const fetchState = () => {
+      $.ajax({
+        url: `${BACKEND_URL}/api/quiz/state`,
+        method: 'GET',
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        },
+        dataType: 'JSON',
+        success: (response) => {
+          if(response.data) {
+            const currentState = response.data.state;
+            number = currentState;
+            const score = response.data.score;
+            quizHistoryId = response.data.id;
+            const question = JSON.parse(response.data.questionList)[currentState - 1];
+            $('#question').text(question.content);
+            questionContent = question.content;
+            $('#scoreLabel').text(`(${currentState}/10)`);
+            questionId = question.id;
+            for (let i = 0; i < 3; i++) {
+              const o = question.options[i];
+              $(`#answer${i}`).val(`${o.id}`);
+              $(`#labelAnswer${i}`).text(`${o.content}`);
+            }
+          }
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      })
+    }
+    const checkAnswer = () => {
+      var radios = document.getElementsByName('answer');
+      let answerId = "0";
+      for (var i = 0, length = radios.length; i < length; i++) {
+        if (radios[i].checked) {
+          answerId = radios[i].value;
+          // only one radio can be logically checked, don't check the rest
+          break;
+        }
+      }
+      if(answerId == "0") {
+        return;
+      }
+      const checkAnswerData = {
+        questionId: Number(questionId),
+        answerId: Number(answerId)
+      }
+      $('#btnAction').text('Next Answer');
+      $('#btnAction').attr('onclick', 'nextAnswer();');
+        $.ajax({
+          url: `${BACKEND_URL}/api/quiz/answer/check`,
+          method: 'POST',
+          headers: {
+            "Authorization": `Bearer ${accessToken}`
+          },
+          dataType: 'JSON',
+          data: checkAnswerData,
+          success: (response) => {
+            isCorrect = response.data.isCorrect;
+            explanation1 = response.data.explanation;
+            explanation2 = response.data.correctExplanation;
+
+            const title = isCorrect ? 'Benar!' : 'Salah!';
+            const  alertColor = isCorrect ? 'success' : 'danger';
+                      const content = `
+                          <div id="" class="alert alert-${alertColor}">
+                            <h6>Jawaban yang kamu pilih ${title}</h6>
+                            <p class="text-dark">
+                              ${explanation1}
+                            </p>
+                            <p class="text-dark">
+                              ${isCorrect ? '' : explanation2}
+                            </p>
+                          </div>`;
+              $('#answerInfo').append(content);
+              updateState();
+          },
+          error: (err) => {
+            console.log(err);
+          }
+        });
+    }
+    const updateState = () => {
+      const updateState = {
+            lastNumber: Number(number), 
+            quizHistoryId, 
+            question: questionContent, 
+            isCorrect, 
+            explanation: explanation1, 
+            correctExplanation: explanation2
+      }
+      $.ajax({
+        url: `${BACKEND_URL}/api/quiz/state`,
+        method: 'PUT',
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        },
+        dataType: 'JSON',
+        contentType: 'application/json',
+        data: JSON.stringify(updateState),
+        success: (response) => {
+          console.log('Update State Success');
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+    }
+    const nextAnswer = () => {
+      if(number == 10) {
+         // Finish Action
+         const finishData = {
+            id: quizHistoryId
+         }
+         $.ajax({
+            url: `${BACKEND_URL}/api/quiz/finalize`,
+            method: 'POST',
+            headers: {
+              "Authorization": `Bearer ${accessToken}`
+            },
+            dataType: 'JSON',
+            contentType: 'application/json',
+            data: JSON.stringify(finishData),
+            success: (response) => {
+              console.log('Finishing Quiz Success');
+              location.href = '../user/quiz_finish';
+            },
+            error: (err) => {
+              console.log(err);
+            }
+          });
+      } else {
+        location.reload();
+      }
+    }
+</script>
+
+            
