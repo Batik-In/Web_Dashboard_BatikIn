@@ -181,7 +181,7 @@
                         success: (data => {
                             if(data.status){
                                 localStorage.setItem('accessToken', data.token)
-                                window.location = '/admin/batik'
+                                window.location = '/profile'
                             } else {
                                 alertContainer.attr('hidden', false)
                                 alertMessage.html(data.message)
